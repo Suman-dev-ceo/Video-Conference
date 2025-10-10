@@ -29,8 +29,8 @@ function VideoMeetComponent() {
   let localVideoRef = useRef();
   let [videoAvaliable, setVideoAvailable] = useState(true);
   let [audioAvaliable, setAudioAvailable] = useState(true);
-  let [video, setVideo] = useState([]);
-  let [audio, setAudio] = useState();
+  let [video, setVideo] = useState(false);
+  let [audio, setAudio] = useState(false);
   let [screen, setScreen] = useState();
   let [showModal, setShowModal] = useState(true);
   let [screenAvaliable, setScreenAvaliable] = useState();
@@ -129,9 +129,18 @@ function VideoMeetComponent() {
     for (let id in connections) {
       if (id === socketIdRef.current) continue;
 
-      window.localStream.getTracks().forEach((track) => {
-        connections[id].addTrack(track, window.localStream);
-      });
+      const senders = connections[id].getSenders();
+
+      for (const track of window.localStream.getTracks()) {
+        const sender = senders.find(
+          (s) => s.track && s.track.kind === track.kind
+        );
+        if (sender) {
+          sender.replaceTrack(track);
+        } else {
+          connections[id].addTrack(track, window.localStream);
+        }
+      }
 
       connections[id].createOffer().then((description) => {
         connections[id]
@@ -161,13 +170,22 @@ function VideoMeetComponent() {
           //TODO BLACKSILENCE
           let blackSilence = (...args) =>
             new MediaStream([black(...args), silence()]);
-          window.localStream = blackSilence;
+          window.localStream = blackSilence();
           localVideoRef.current.srcObject = window.localStream;
 
           for (let id in connections) {
-            window.localStream.getTracks().forEach((track) => {
-              connections[id].addTrack(track, window.localStream);
-            });
+            const senders = connections[id].getSenders();
+
+            for (const track of window.localStream.getTracks()) {
+              const sender = senders.find(
+                (s) => s.track && s.track.kind === track.kind
+              );
+              if (sender) {
+                sender.replaceTrack(track);
+              } else {
+                connections[id].addTrack(track, window.localStream);
+              }
+            }
 
             connections[id].createOffer().then((description) => {
               connections[id]
@@ -191,7 +209,10 @@ function VideoMeetComponent() {
     let oscillator = ctx.createOscillator();
 
     let dst = oscillator.connect(ctx.createMediaStreamDestination());
-
+    setTimeout(() => {
+      oscillator.stop();
+      ctx.close();
+    }, 1000); // clean up after a second
     oscillator.start();
     ctx.resume();
     return Object.assign(dst.stream.getAudioTracks()[0], { enabled: false });
@@ -288,7 +309,8 @@ function VideoMeetComponent() {
 
     socketRef.current.on("signal", gotMessageFromServer);
     socketRef.current.on("connect", () => {
-      socketRef.current.emit("join-call", window.location.href);
+      const roomId = window.location.pathname; //or a custom room ID
+      socketRef.current.emit("join-call", roomId);
       socketIdRef.current = socketRef.current.id;
       socketRef.current.on("chat-message", addMessage);
       socketRef.current.on("user-left", (id) => {
@@ -306,6 +328,10 @@ function VideoMeetComponent() {
       });
       socketRef.current.on("user-joined", (id, clients) => {
         clients.forEach((socketListId) => {
+          // Skip creating a connection for self or existing peers
+          if (socketListId === socketIdRef.current) return;
+          // Skip if connection already exists (avoid duplicates)
+          if (connections[socketListId]) return;
           connections[socketListId] = new RTCPeerConnection(
             peerConfigConnections
           );
@@ -353,24 +379,25 @@ function VideoMeetComponent() {
             }
           };
 
-          if (window.localStream !== undefined && window.localStream !== null) {
+          if (window.localStream && window.localStream.getTracks().length > 0) {
             // Remove existing tracks first to avoid duplicates
             const senders = connections[socketListId].getSenders();
-            senders.forEach((sender) => {
-              if (sender.track && sender.track.kind === "video") {
-                connections[socketListId].removeTrack(sender);
+            for (const track of window.localStream.getTracks()) {
+              const sender = senders.find(
+                (s) => s.track && s.track.kind === track.kind
+              );
+              if (sender) {
+                sender.replaceTrack(track);
+              } else {
+                connections[socketListId].addTrack(track, window.localStream);
               }
-            });
-
-            // Then add new tracks
-            window.localStream.getTracks().forEach((track) => {
-              connections[socketListId].addTrack(track, window.localStream);
-            });
+            }
           } else {
             // TODO Blacksilence
             let blackSilence = (...args) =>
               new MediaStream([black(...args), silence()]);
-            window.localStream = blackSilence;
+
+            window.localStream = blackSilence();
             window.localStream.getTracks().forEach((track) => {
               connections[socketListId].addTrack(track, window.localStream);
             });
@@ -381,10 +408,21 @@ function VideoMeetComponent() {
             if (id2 === socketIdRef.current) continue;
 
             try {
-              window.localStream.getTracks().forEach((track) => {
-                connections[id2].addTrack(track, window.localStream);
-              });
-            } catch (e) {}
+              const senders = connections[id2].getSenders();
+
+              for (const track of window.localStream.getTracks()) {
+                const sender = senders.find(
+                  (s) => s.track && s.track.kind === track.kind
+                );
+                if (sender) {
+                  sender.replaceTrack(track);
+                } else {
+                  connections[id2].addTrack(track, window.localStream);
+                }
+              }
+            } catch (e) {
+              console.log(e);
+            }
 
             connections[id2].createOffer().then((description) => {
               connections[id2]
@@ -440,15 +478,18 @@ function VideoMeetComponent() {
 
       // Remove existing tracks
       const senders = connections[id].getSenders();
-      senders.forEach((sender) => {
-        if (sender.track) {
-          connections[id].removeTrack(sender);
+      for (const track of window.localStream.getTracks()) {
+        const sender = senders.find(
+          (s) => s.track && s.track.kind === track.kind
+        );
+        if (sender) {
+          // Replace the existing track with the new one (smooth transition)
+          sender.replaceTrack(track);
+        } else {
+          // No existing sender of this kind — add new track
+          connections[id].addTrack(track, window.localStream);
         }
-      });
-
-      window.localStream.getTracks().forEach((track) => {
-        connections[id].addTrack(track, window.localStream);
-      });
+      }
 
       connections[id].createOffer().then((description) => {
         connections[id]
@@ -477,7 +518,7 @@ function VideoMeetComponent() {
           //TODO BLACKSILENCE
           let blackSilence = (...args) =>
             new MediaStream([black(...args), silence()]);
-          window.localStream = blackSilence;
+          window.localStream = blackSilence();
           localVideoRef.current.srcObject = window.localStream;
 
           getUserMedia();
@@ -531,7 +572,9 @@ function VideoMeetComponent() {
   };
 
   let handleChat = () => {
-    setShowModal(!showModal);
+    setShowModal((prev) => !prev);
+    //reset unread messages when opening chat
+    setNewMessages(0);
   };
 
   let sendMessage = () => {
@@ -543,6 +586,8 @@ function VideoMeetComponent() {
     try {
       let tracks = localVideoRef.current.srcObject.getTracks();
       tracks.forEach((track) => track.stop());
+      setVideos([]);
+      videoRef.current = [];
     } catch (e) {
       console.log(e);
     }
