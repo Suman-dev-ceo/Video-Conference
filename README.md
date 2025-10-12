@@ -1,17 +1,18 @@
-# Video Meeting App with WebRTC & Socket.IO
+# 🎥 Video Meeting App with WebRTC & Socket.IO
 
 A real-time video conferencing application built using WebRTC, Socket.IO, and React. It allows users to join virtual rooms, enable video/audio, share screens, chat in real-time, and more features. This application uses peer-to-peer connections to ensure a smooth video call experience.
 
-# Table of Contents
-1.	Features
-2.	Installation
-3.	Usage
-4.	Technologies
-5.	Folder Structure
-6.	Contributions
-7.	License
+## 📋 Table of Contents
+1. [Highlights](#highlights)
+2. [Tech Stack](#tech-stack)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Author](#author)
+6. [Project Screenshots](#project-screenshots)
 
-# Highlights
+ 
+
+## Highlights
 - **Real-time video/audio steaming** with WebRTC
 - **Secure authentication** (user registration and login) using bcrypt
 - **Join as guest** feature for hassel-free connectivity
@@ -21,7 +22,7 @@ A real-time video conferencing application built using WebRTC, Socket.IO, and Re
 - **Efficient resource management**: Automatic cleanup of connections and media streams when users leave or disconnect
 - **Backend signaling** with Express and Socket.IO for WebRTC peer connections
 
-# Tech Stack
+## Tech Stack
 ```
 Layer				Technology
 Frontend		React • Material UI • Socket.IO-Client • Axios • CSS 
@@ -32,7 +33,7 @@ Dev Tools		Nodemon
 ```
 
 
-# Installation
+## Installation
 1. **Clone the repository:**
 ```bash
 git clone https://github.com/your-username/video-meeting-app.git
@@ -58,8 +59,8 @@ cd video-meeting-app
      ```
   The backend will be available at http://localhost:8080 (or the specified port in your server config).
   > [!IMPORTANT]
-> In development (local machine) : set value of is_prod as false by navigating into frontend/src/environment.js
-> In production : set value of is_prod as true using the same path as above.
+> In development (local machine) : set value of **is_prod** as **false** by navigating into **frontend/src/environment.js** \
+> In production : set value of **is_prod** as **true** using the same path as above.
 
 3. **Frontend (Client)**
    - Navigate to frontend directory
@@ -77,7 +78,7 @@ cd video-meeting-app
  
 The frontend will be available at http://localhost:3000  
 
-# Usage
+## Usage
 1. Register/ Login
    - Sign up using your email and password.
    - Login to access the dashboard
@@ -96,10 +97,24 @@ The frontend will be available at http://localhost:3000
    - Here user can moniter history of previous meeting by clicking on history a data of meeting codes with respective dates are shown.
    - Finally upon hitting logout button user will walk out of the video conference application.
   
-# Author
-Suman Srinivas
-CSE | Parul University
+## Author
+Suman Srinivas \
+CSE | Parul University \
 Full Stack Web Developer
+
+## Project Screenshots
+
+| Home Page | Login/ SignUP | Dashboard |
+|------------|---------------|--------------|
+| ![Home](frontend/Images/%20%202025-10-12%20at%2011.27.31.png) | ![Login/Signup]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.27.55.png) | ![Dashboard]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.28.39.png) |
+
+| Dashboard | Lobby| Meeting Room |
+|-------------|--------------|---------------|
+| ![Login]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.29.02.png) | ![Signup]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.30.51.png) | ![Share]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.33.47.png) |
+
+| Share screen | History |
+|------------------|-----------------|
+| ![Participants]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.36.41.png) | ![EndCall]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.36.56.png) |
 
 
 
