@@ -2,6 +2,8 @@
 
 A real-time video conferencing application built using WebRTC, Socket.IO, and React. It allows users to join virtual rooms, enable video/audio, share screens, chat in real-time, and more features. This application uses peer-to-peer connections to ensure a smooth video call experience.
 
+Live Demo: https://video-conference-frontend-tn3o.onrender.com
+
 ## 📋 Table of Contents
 1. [Highlights](#highlights)
 2. [Tech Stack](#tech-stack)
@@ -36,7 +38,7 @@ Dev Tools		Nodemon
 ## Installation
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/your-username/video-meeting-app.git
+git clone https://github.com/Suman-dev-ceo/Video-Conference.git
 cd video-meeting-app 
 ```
 2. **Backend (server)**
@@ -96,11 +98,6 @@ The frontend will be available at http://localhost:3000
    - Again redirects to dashboard
    - Here user can moniter history of previous meeting by clicking on history a data of meeting codes with respective dates are shown.
    - Finally upon hitting logout button user will walk out of the video conference application.
-  
-## Author
-Suman Srinivas \
-CSE | Parul University \
-Full Stack Web Developer
 
 ## Project Screenshots
 
@@ -115,6 +112,11 @@ Full Stack Web Developer
 | Share screen | History |
 |------------------|-----------------|
 | ![Participants]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.36.41.png) | ![EndCall]( https://github.com/Suman-dev-ceo/Video-Conference/blob/main/frontend/Images/%20%202025-10-12%20at%2011.36.56.png) |
+
+## Author
+Suman Srinivas | Full Stack Web Developer \
+Connect: sumansrinivas75699@gmail.com \
+GitHub: https://github.com/Suman-dev-ceo/Video-Conference
 
 
 
